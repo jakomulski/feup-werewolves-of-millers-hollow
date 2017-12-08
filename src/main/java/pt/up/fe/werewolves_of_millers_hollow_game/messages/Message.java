@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Supplier;
 
 import jade.lang.acl.ACLMessage;
 import pt.up.fe.werewolves_of_millers_hollow_game.common.AgentTypes;
@@ -14,13 +15,13 @@ public class Message {
 	private List<String> playerNames = new ArrayList<>();
 	private MessageTypes messageType;
 	private MessageTopics messageTopic;
-	private Serializable messageContent;
+	private Supplier<Serializable> messageContent;
 
 	public ACLMessage toACLMessage() {
 		ACLMessage aclMsg = new ACLMessage(getMessageType().ordinal());
 		aclMsg.addUserDefinedParameter("topic", getMessageTopic().name());
 		try {
-			aclMsg.setContentObject(getMessageContent());
+			aclMsg.setContentObject(getMessageContent().get());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -31,7 +32,7 @@ public class Message {
 		return messageTopic;
 	}
 
-	public Message(MessageTypes messageType, MessageTopics messageTopic, String messageContent) {
+	public Message(MessageTypes messageType, MessageTopics messageTopic, Supplier<Serializable> messageContent) {
 		this.messageType = messageType;
 		this.messageTopic = messageTopic;
 		this.messageContent = messageContent;
@@ -40,7 +41,7 @@ public class Message {
 	public Message(MessageTypes messageType, MessageTopics messageTopic) {
 		this.messageType = messageType;
 		this.messageTopic = messageTopic;
-		this.messageContent = "";
+		this.messageContent = () -> null;
 	}
 
 	public List<AgentTypes> getReceivers() {
@@ -65,13 +66,14 @@ public class Message {
 		return messageType;
 	}
 
-	public Serializable getMessageContent() {
+	public Supplier<Serializable> getMessageContent() {
 		return messageContent;
 	}
 
 	@Override
 	public String toString() {
-		return "Message [" + messageType + ", " + messageTopic + ", " + messageContent + "]";
+		return messageTopic.getText() + (messageContent.get() == null ? "" : (" " + messageContent.get()))
+				+ messageType.getText();
 	}
 
 }

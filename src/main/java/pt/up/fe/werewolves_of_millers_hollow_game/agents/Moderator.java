@@ -11,7 +11,7 @@ public abstract class Moderator extends BaseAgent {
 	}
 
 	protected void changeGameState(GameStates gameState) {
-		System.out.println("  ---- " + gameState + " ----");
+		System.out.println("\n  ---- " + gameState + " ----\n" + this.players + "\n");
 		GameStates.setCurrentState(gameState);
 	}
 }

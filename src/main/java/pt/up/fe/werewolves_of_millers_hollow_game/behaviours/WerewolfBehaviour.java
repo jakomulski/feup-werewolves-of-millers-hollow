@@ -22,6 +22,5 @@ public class WerewolfBehaviour extends BaseBehaviour {
 		} catch (FIPAException e) {
 			e.printStackTrace();
 		}
-		System.out.println(player.getLocalName() + ": I am werewolf");
 	}
 }

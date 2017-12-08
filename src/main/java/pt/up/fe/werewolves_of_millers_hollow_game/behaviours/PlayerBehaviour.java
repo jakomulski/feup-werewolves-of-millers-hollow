@@ -17,7 +17,6 @@ public class PlayerBehaviour extends BaseBehaviour {
 
 		try {
 			DFService.register(player, player.createDFAgentDescriptionWithType(AgentTypes.PLAYER.name()));
-			System.out.println(player.getLocalName() + ": I am player");
 		} catch (FIPAException e) {
 			e.printStackTrace();
 		}

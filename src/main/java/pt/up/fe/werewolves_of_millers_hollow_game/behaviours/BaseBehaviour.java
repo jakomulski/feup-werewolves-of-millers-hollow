@@ -39,11 +39,14 @@ public abstract class BaseBehaviour extends SimpleBehaviour {
 	private boolean messageReceiveConditions(Operation operation, ACLMessage received) {
 		ReceiveMessage expected = operation.getExpectedMessage();
 
+		String type = received.getUserDefinedParameter("type");
+		if (type == null)
+			return false;
+
 		boolean stateIsCorrect = GameStates.currentState.equals(operation.getGameState());
 		boolean messageTypeIsCorrect = received.getPerformative() == expected.getMessageType().ordinal();
 		boolean senderIsNotReceiver = !received.getSender().equals(operation.getAgent().getAID());
-		boolean senderHasSpecefiedType = expected.getPlayerTypes()
-				.contains(AgentTypes.valueOf(received.getUserDefinedParameter("type")));
+		boolean senderHasSpecefiedType = expected.getPlayerTypes().contains(AgentTypes.valueOf(type));
 		boolean topicIsCorrect = expected.getMessageTopic().name().equals(received.getUserDefinedParameter("topic"));
 		return senderIsNotReceiver && stateIsCorrect && messageTypeIsCorrect && topicIsCorrect
 				&& senderHasSpecefiedType;

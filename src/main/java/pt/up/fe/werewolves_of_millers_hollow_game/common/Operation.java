@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -88,19 +87,22 @@ public class Operation {
 			};
 		}
 
-		default ActionConsumer afterMessagesNumber(int number) {
-			AtomicInteger counter = new AtomicInteger(number);
+		default ActionConsumer afterMessagesNumber(Supplier<Integer> numberSupplier) {
+			GenericWrapper<Integer> counter = new GenericWrapper<>();
 			return consumer -> {
 				return then((msg) -> {
-					if (counter.decrementAndGet() == 0) {
+					counter.setIfNull(numberSupplier.get());
+					counter.set(counter.get() - 1);
+					if (counter.get() == 0) {
 						consumer.accept(msg);
+						counter.set(null);
 					}
 				});
 			};
 		}
 
-		default void thenSend(BaseAgent agent, Message message) {
-			then(Actions.sendMessage(agent, message));
+		default ActionConsumer thenSend(BaseAgent agent, Message message) {
+			return then(Actions.sendMessage(agent, message));
 		}
 
 		default void thenReply(BaseAgent agent, MessageTypes messageType, Supplier<Serializable> messageContent) {

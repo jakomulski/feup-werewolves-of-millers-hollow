@@ -12,26 +12,39 @@ public class Game {
 	private final Profile profile = new ProfileImpl(true);
 	private final ContainerController containerController = jade.core.Runtime.instance().createMainContainer(profile);
 
-	private final Class<? extends Moderator> moderatorClass;
-	private final Class<? extends Player> playerClass;
-
-	public Game(GameSpecyfication gameSpecyfication, Class<? extends Moderator> moderatorClass,
-			Class<? extends Player> playerClass) {
+	public Game(GameSpecyfication gameSpecyfication) {
 		this.gameSpecyfication = gameSpecyfication;
-		this.moderatorClass = moderatorClass;
-		this.playerClass = playerClass;
 	}
 
-	public void startGame() throws StaleProxyException {
-		int playersNumber = gameSpecyfication.getPlayerTypesNumbers().values().stream().mapToInt(Integer::intValue)
-				.sum();
-		for (; playersNumber > 0; --playersNumber) {
-			containerController
-					.createNewAgent("p" + playersNumber, playerClass.getName(), new Object[] { gameSpecyfication })
-					.start();
-		}
-
+	public Game addModerator(Class<? extends Moderator> moderatorClass) throws StaleProxyException {
 		containerController.createNewAgent("moderator", moderatorClass.getName(), new Object[] { gameSpecyfication })
 				.start();
+		return this;
 	}
+
+	private int playersNumber = 0;
+
+	public Game addPlayer(Class<? extends Player> playerClass) throws StaleProxyException {
+		containerController
+				.createNewAgent("p" + playersNumber, playerClass.getName(), new Object[] { gameSpecyfication }).start();
+		playersNumber++;
+		return this;
+	}
+
+	// public void startGame() throws StaleProxyException {
+	// int playersNumber =
+	// gameSpecyfication.getPlayerTypesNumbers().values().stream().mapToInt(Integer::intValue)
+	// .sum();
+	// for (; playersNumber > 0; --playersNumber) {
+	// containerController
+	// .createNewAgent("p" + playersNumber, playerClass.getName(), new Object[]
+	// { gameSpecyfication })
+	// .start();
+	// }
+	//
+	// containerController.createNewAgent("moderator", moderatorClass.getName(),
+	// new Object[] { gameSpecyfication })
+	// .start();
+	// }
+
 }

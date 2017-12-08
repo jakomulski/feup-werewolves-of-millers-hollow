@@ -53,5 +53,4 @@ public abstract class BaseAgent extends Agent {
 	protected interface Configuration {
 		Operation addOperation(GameStates gameState, AgentTypes agentType);
 	}
-
 }
