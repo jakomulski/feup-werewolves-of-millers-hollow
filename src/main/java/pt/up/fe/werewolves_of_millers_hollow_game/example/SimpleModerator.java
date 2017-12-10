@@ -81,10 +81,9 @@ public class SimpleModerator extends Moderator {
 				votes.clear();
 			}
 		};
-		config.get()
-		.whenReceive(MessageTypes.OK, MessageTopics.DAY_END)
-		.fromTypes(AgentTypes.PLAYERS)
-		.then(aclMsg -> {
+
+		AtomicInteger counter = new AtomicInteger(0);
+		config.get().whenReceive(MessageTypes.OK, MessageTopics.DAY_END).fromTypes(AgentTypes.PLAYERS).then(aclMsg -> {
 			try {
 				String vote = (String) aclMsg.getContentObject();
 				if (vote != null) {
@@ -95,13 +94,14 @@ public class SimpleModerator extends Moderator {
 			} catch (UnreadableException e) {
 				e.printStackTrace();
 			}
-		}).afterMessagesNumber(players::size)
-		.then(aclMsg -> {
+		}).afterMessagesNumber(players::size).then(aclMsg -> {
+			counter.set((counter.get() + 1) % 4);
+
 			Optional<String> highestVoteValue = highestVote.get();
 			String vote = highestVoteValue.orElse(null);
 
 			this.doWait(500);
-			if (vote == null) {
+			if (vote == null && counter.get() != 3) {
 				dayAction(aclMsg, null);
 			} else {
 				this.players.remove(vote);
