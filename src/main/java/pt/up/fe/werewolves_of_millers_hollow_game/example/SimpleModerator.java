@@ -18,7 +18,7 @@ import pt.up.fe.werewolves_of_millers_hollow_game.messages.Message;
 import pt.up.fe.werewolves_of_millers_hollow_game.messages.MessageTopics;
 import pt.up.fe.werewolves_of_millers_hollow_game.messages.MessageTypes;
 
-public class DummyModerator extends Moderator {
+public class SimpleModerator extends Moderator {
 	private static final long serialVersionUID = 6116674073712848165L;
 
 	@Override
@@ -81,7 +81,10 @@ public class DummyModerator extends Moderator {
 				votes.clear();
 			}
 		};
-		config.get().whenReceive(MessageTypes.OK, MessageTopics.DAY_END).fromTypes(AgentTypes.PLAYERS).then(aclMsg -> {
+		config.get()
+		.whenReceive(MessageTypes.OK, MessageTopics.DAY_END)
+		.fromTypes(AgentTypes.PLAYERS)
+		.then(aclMsg -> {
 			try {
 				String vote = (String) aclMsg.getContentObject();
 				if (vote != null) {
@@ -92,7 +95,8 @@ public class DummyModerator extends Moderator {
 			} catch (UnreadableException e) {
 				e.printStackTrace();
 			}
-		}).afterMessagesNumber(players::size).then(aclMsg -> {
+		}).afterMessagesNumber(players::size)
+		.then(aclMsg -> {
 			Optional<String> highestVoteValue = highestVote.get();
 			String vote = highestVoteValue.orElse(null);
 

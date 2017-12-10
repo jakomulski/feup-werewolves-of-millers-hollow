@@ -48,7 +48,8 @@ public class SmartFortuneTellerStrategy implements Strategy {
 							player.players.remove(killedPlayer);
 							playersToCheckFirst.remove(killedPlayer);
 						}
-						if (actionToDoAtDay != null && !killedPlayer.equals(player.getLocalName()))
+						if (actionToDoAtDay != null && killedPlayer != null
+								&& !killedPlayer.equals(player.getLocalName()))
 							actionToDoAtDay.run();
 
 					} catch (UnreadableException e) {
